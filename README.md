@@ -9,6 +9,9 @@ Add to your existing workflow definition:
 ```yml
 jobs:
   lint:
-    name: Lint
-    uses: lexmag/elixir-actions/.github/workflows/lint.yml@v1
+    name: Code linting
+    uses: lexmag/elixir-actions/.github/workflows/lint.yml@v2
+    with:
+      otp-version: "24"
+      elixir-version: "1.14"
 ```

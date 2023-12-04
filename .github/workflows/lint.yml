@@ -2,6 +2,19 @@ name: Code linting
 
 on:
   workflow_call:
+    inputs:
+      otp-version:
+        required: true
+        type: string
+      elixir-version:
+        required: true
+        type: string
+      warnings-as-errors:
+        default: true
+        type: boolean
+      check-unused-deps:
+        default: true
+        type: boolean
 
 jobs:
   lint:
@@ -15,14 +28,16 @@ jobs:
       - name: Install OTP and Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: "24"
-          elixir-version: "1.14"
-
-      - name: Check for unused dependencies
-        run: mix deps.get && mix deps.unlock --check-unused
+          otp-version: ${{ inputs.otp-version }}
+          elixir-version: ${{ inputs.elixir-version }}
 
       - name: Check formatting
-        run: mix format --check-formatted
+        run: mix do deps.get, format --check-formatted
+
+      - name: Check for unused dependencies
+        if: ${{ inputs.check-unused-deps }}
+        run: mix deps.unlock --check-unused
 
       - name: Check for compilation warnings
+        if: ${{ inputs.warnings-as-errors }}
         run: mix compile --warnings-as-errors
